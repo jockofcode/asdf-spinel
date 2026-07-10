@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+cat <<'EOF'
+Installs the Spinel Ruby AOT compiler from matz/spinel source.
+EOF

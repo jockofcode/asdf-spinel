@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+cat <<'EOF'
+Spinel repository: https://github.com/matz/spinel
+asdf documentation: https://asdf-vm.com/plugins/create.html
+EOF

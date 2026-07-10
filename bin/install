@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+plugin_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+# shellcheck source=lib/utils.bash
+. "${plugin_dir}/lib/utils.bash"
+
+[ "${ASDF_INSTALL_TYPE:-}" != "" ] || fail "ASDF_INSTALL_TYPE is required"
+[ "${ASDF_INSTALL_VERSION:-}" != "" ] || fail "ASDF_INSTALL_VERSION is required"
+[ "${ASDF_INSTALL_PATH:-}" != "" ] || fail "ASDF_INSTALL_PATH is required"
+
+ref="$(version_ref "$ASDF_INSTALL_TYPE" "$ASDF_INSTALL_VERSION")"
+install_source="${ASDF_DOWNLOAD_PATH:-}"
+cleanup_dir=""
+
+if [ "$install_source" = "" ]; then
+  cleanup_dir="$(mktemp -d)"
+  install_source="${cleanup_dir}/source"
+  download_source "$ref" "$install_source"
+fi
+
+cleanup() {
+  if [ "$cleanup_dir" != "" ]; then
+    rm -rf "$cleanup_dir"
+  fi
+}
+rm -rf "$ASDF_INSTALL_PATH"
+mkdir -p "$ASDF_INSTALL_PATH"
+
+require_cmd make
+require_cmd cc
+
+(
+  cd "$install_source"
+  make deps
+  make install "PREFIX=${ASDF_INSTALL_PATH}"
+)
+
+[ -x "${ASDF_INSTALL_PATH}/bin/spinel" ] || fail "installation did not create bin/spinel"
+[ -x "${ASDF_INSTALL_PATH}/bin/spin" ] || fail "installation did not create bin/spin"
+
+cleanup
+printf 'Spinel %s installation was successful\n' "$ref"

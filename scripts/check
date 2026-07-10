@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+repo_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+missing_executable=0
+for script in "${repo_dir}"/bin/*; do
+  if [ ! -x "$script" ]; then
+    echo "not executable: ${script#"$repo_dir"/}" >&2
+    missing_executable=1
+  fi
+done
+
+if [ "$missing_executable" -ne 0 ]; then
+  exit 1
+fi
+
+bash -n "${repo_dir}"/bin/* "${repo_dir}"/lib/*.bash
+
+if command -v shellcheck >/dev/null 2>&1; then
+  (
+    cd "$repo_dir"
+    shellcheck -x bin/* lib/*.bash
+  )
+else
+  echo "shellcheck not found; skipped shellcheck lint" >&2
+fi
+
+echo "checks passed"
