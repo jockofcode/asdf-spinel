@@ -8,7 +8,7 @@ installs the `master` source from [`matz/spinel`](https://github.com/matz/spinel
 ## Install
 
 ```sh
-asdf plugin add spinel https://github.com/YOUR_GITHUB_USER/asdf-spinel.git
+asdf plugin add spinel https://github.com/jockofcode/asdf-spinel.git
 asdf list all spinel
 asdf install spinel master
 asdf set -u spinel master
