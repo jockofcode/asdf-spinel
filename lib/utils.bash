@@ -22,8 +22,14 @@ version_ref() {
 
   case "$install_type" in
     version)
-      [ "$install_version" = "master" ] || fail "only master is listed until Spinel publishes version tags"
-      printf 'master\n'
+      case "$install_version" in
+        latest|master)
+          printf 'master\n'
+          ;;
+        *)
+          fail "only 'latest' is supported until Spinel publishes version tags"
+          ;;
+      esac
       ;;
     ref)
       printf '%s\n' "$install_version"
@@ -35,15 +41,11 @@ version_ref() {
 }
 
 list_versions() {
-  printf 'master\n'
+  printf 'latest\nmaster\n'
 }
 
 latest_stable_version() {
-  local query="${1:-}"
-
-  if [ "$query" = "" ] || [ "$query" = "master" ]; then
-    printf 'master\n'
-  fi
+  printf 'latest\n'
 }
 
 download_source() {

@@ -42,3 +42,4 @@ require_cmd cc
 
 cleanup
 printf 'Spinel %s installation was successful\n' "$ref"
+printf 'To update later: asdf uninstall spinel %s && asdf install spinel %s\n' "$ASDF_INSTALL_VERSION" "$ASDF_INSTALL_VERSION"
