@@ -9,8 +9,8 @@ installs the `master` source from [`matz/spinel`](https://github.com/matz/spinel
 
 ```sh
 asdf plugin add spinel https://github.com/jockofcode/asdf-spinel.git
-asdf install spinel latest
-asdf set -u spinel latest
+asdf install spinel master
+asdf set -u spinel master
 ```
 
 ## Updating
@@ -19,8 +19,9 @@ Because asdf skips the install step when a version is already present, updating
 to the newest `master` requires an uninstall first:
 
 ```sh
-asdf uninstall spinel latest
-asdf install spinel latest
+asdf uninstall spinel master
+asdf install spinel master
+asdf set -u spinel master
 ```
 
 ## What Gets Installed
@@ -52,7 +53,7 @@ The Spinel install target creates shims for:
 To install from a fork, set `SPINEL_GITHUB_REPO`:
 
 ```sh
-SPINEL_GITHUB_REPO=your-user/spinel asdf install spinel latest
+SPINEL_GITHUB_REPO=your-user/spinel asdf install spinel master
 ```
 
 To install an arbitrary Git ref, use asdf's ref install form:
@@ -74,7 +75,7 @@ Try the plugin locally:
 ```sh
 asdf plugin add spinel "$PWD"
 asdf list all spinel
-asdf install spinel latest
+asdf install spinel master
 ```
 
 ## License
