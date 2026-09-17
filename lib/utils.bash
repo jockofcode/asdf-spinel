@@ -51,13 +51,22 @@ github_releases_json() {
     | jq -c 'select(.draft == false and .prerelease == false)'
 }
 
+# "<tag> <commit-sha>" pairs (one per line) for every tag in the repo.
+github_tag_commits() {
+  github_api_get "${SPINEL_GITHUB_API}/tags?per_page=100" \
+    | jq -r '"\(.name) \(.commit.sha)"'
+}
+
 # The commit sha a given tag currently points to (dereferenced), or empty.
 resolve_tag_commit() {
   local tag="$1"
 
-  github_api_get "${SPINEL_GITHUB_API}/tags?per_page=100" \
-    | jq -r --arg tag "$tag" 'select(.name == $tag) | .commit.sha' \
-    | head -n 1
+  github_tag_commits | awk -v tag="$tag" '$1 == tag { print $2; exit }'
+}
+
+# Strips the "+<shorthash>" display suffix list_versions appends, if present.
+strip_version_suffix() {
+  printf '%s\n' "${1%%+*}"
 }
 
 version_ref() {
@@ -83,8 +92,9 @@ version_ref() {
           require_cmd curl
           require_cmd jq
 
-          local sha
-          sha="$(resolve_tag_commit "$install_version")"
+          local tag sha
+          tag="$(strip_version_suffix "$install_version")"
+          sha="$(resolve_tag_commit "$tag")"
           [ -n "$sha" ] || fail "unknown version '${install_version}'; run 'asdf list all ${TOOL_NAME}' to see available releases, or use 'master'/'ref:<git-ref>' to install an unreleased commit"
           printf '%s\n' "$sha"
           ;;
@@ -103,7 +113,20 @@ list_versions() {
   require_cmd curl
   require_cmd jq
 
-  github_releases_json | jq -r '.tag_name' | sort -V
+  local tags shas tag sha
+  tags="$(github_releases_json | jq -r '.tag_name' | sort -V)"
+  shas="$(github_tag_commits)"
+
+  [ -n "$tags" ] || return 0
+
+  while IFS= read -r tag; do
+    sha="$(printf '%s\n' "$shas" | awk -v tag="$tag" '$1 == tag { print $2; exit }')"
+    if [ -n "$sha" ]; then
+      printf '%s+%s\n' "$tag" "${sha:0:7}"
+    else
+      printf '%s\n' "$tag"
+    fi
+  done <<< "$tags"
 }
 
 latest_stable_version() {

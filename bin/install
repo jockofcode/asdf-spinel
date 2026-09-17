@@ -41,5 +41,11 @@ require_cmd cc
 [ -x "${ASDF_INSTALL_PATH}/bin/spin" ] || fail "installation did not create bin/spin"
 
 cleanup
-printf 'Spinel %s installation was successful\n' "$ref"
+
+success_version="$ASDF_INSTALL_VERSION"
+if [ "$ASDF_INSTALL_TYPE" = "version" ] && [ "$ref" != "master" ]; then
+  success_version="$(strip_version_suffix "$ASDF_INSTALL_VERSION") (${ref:0:7})"
+fi
+
+printf 'Spinel %s installation was successful\n' "$success_version"
 printf 'To update later: asdf uninstall spinel %s && asdf install spinel %s\n' "$ASDF_INSTALL_VERSION" "$ASDF_INSTALL_VERSION"

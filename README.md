@@ -18,7 +18,9 @@ asdf install spinel latest
 asdf set -u spinel latest
 ```
 
-Or install a specific release:
+`asdf list all spinel` shows each release as `<tag>+<shorthash>`, e.g.
+`2026.09.12+112bae8` — the trimmed commit hash the tag currently points to.
+You can install using the full string shown, or just the bare tag:
 
 ```sh
 asdf install spinel 2026.09.12
@@ -33,8 +35,9 @@ asdf set -u spinel master
 ```
 
 Installing a tagged release resolves and pins the exact commit that tag
-points to at install time, so the install stays reproducible even if the tag
-is later moved upstream.
+points to at install time (shown as `Spinel 2026.09.12 (112bae8) installation
+was successful`), so the install stays reproducible even if the tag is later
+moved upstream.
 
 ## Updating
 
